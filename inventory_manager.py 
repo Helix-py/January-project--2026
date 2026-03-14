@@ -1,0 +1,184 @@
+﻿class item():
+
+
+    def __init__(self, name, category, quantity):
+
+
+        self.name = name
+        self. category = category
+        self.quantity = quantity
+        self.items = []
+
+
+
+
+    def add_to_inventory(self):
+        raise NotImplementedError()
+
+
+    def remove_from_inventory(self):
+        raise NotImplementedError()
+
+
+    def see_inventory(self):
+        raise NotImplementedError()
+
+
+
+
+
+
+
+
+class Inventory(item):
+
+
+    def __init__(self, name, category, quantity):
+        super().__init__(name, category, quantity)  # inherit everything from item
+
+
+
+
+    def add_to_inventory(self):
+        # 1 get inputs
+        name = input("Enter item name: ").strip()
+        category = input("Enter category name: ").strip()
+
+
+         # 2 Validate inputs
+        if not name or not category:
+            print("Name and category cannot be empty!")
+            return
+
+
+        try:
+            quantity = int(input("Enter quantity: "))
+            if quantity <= 0:
+                print("quantity must be a positve")
+                return
+        except ValueError:
+            print("must be a number")
+            return
+
+
+
+
+        # 3 Check if item with same name + category exists
+        for item in self.items:
+            if item["name"].lower() == name.lower() and item["category"].lower() == category.lower():
+                item["quantity"] += quantity
+                print(f"Updated {name} in {category}, new quantity: {item['quantity']}")
+                return
+
+
+        # 4 If not found, append as new dictionary
+        new_item = {"name" : name, "category" : category, "quantity" : quantity}
+        self.items.append(new_item)
+        print(f'added {name} ({quantity}) to category {category}')
+
+
+
+
+    def remove_from_inventory(self):
+        # 1 prompt for input
+        name = input("Enter item name: ").strip()
+        category = input("Enter category name: ").strip()
+
+
+
+
+        # 2 Validate inputs
+        if not name or not category:
+            print("Name and category cannot be empty!")
+            return
+
+
+        try:
+            quantity_to_remove = int(input("enter how much was taken from inventory: "))
+            if quantity_to_remove <= 0:
+                print("quantity must be a positve")
+                return
+        except ValueError:
+            print("must be a number")
+            return
+
+
+
+
+        found = False
+
+
+        # 3 Search for the item
+        for item in self.items:
+           if item["name"].lower() == name.lower() and item["category"].lower() == category.lower():
+            found = True
+        # found the item → go to Step 4
+
+
+
+
+        # 4 check quantity
+            if quantity_to_remove > item["quantity"]:
+                print("Not enough in inventory")  # leave item unchanged
+            else:
+                item["quantity"] -= quantity_to_remove
+            if item["quantity"] == 0:
+                self.items.remove(item)
+                print("Successfully removed {quantity_to_remove}, remaining: {item['quantity']}")
+
+
+
+
+        # 5 Handle “item not found”
+            if not found:
+                print("Item not found")
+
+
+            print("removed")
+
+
+
+
+
+
+
+
+    def inventory_generator(self):
+        for item in self.items:
+            yield item
+
+
+    def see_inventory(self):
+        for item in self.inventory_generator():
+            print(item)
+
+
+
+
+my_inventory = Inventory("", "", 0) #instance created
+
+
+
+
+while True:
+    print("\n--- Inventory Menu ---")
+    print("1. Add item")
+    print("2. See inventory")
+    print("3. Remove item")
+    print("4. Exit")
+
+
+    choice = input("Choose an option: ").strip()
+
+
+    if choice == "1":
+        my_inventory.add_to_inventory()
+    elif choice == "2":
+        my_inventory.see_inventory()
+    elif choice == "3":
+        my_inventory.remove_from_inventory()  # pretend it's fully implemented
+    elif choice == "4":
+        print("Goodbye!")
+        break
+    else:
+        print("Invalid choice, try again.")
